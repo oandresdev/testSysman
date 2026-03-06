@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+
+  oracle:
+    image: gvenzl/oracle-xe:21-slim-faststart
+    container_name: oracle-taskdb
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: oracle123
+      ORACLE_DATABASE: taskDB
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+  app:
+    build: .
+    container_name: tasksysman-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - oracle
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle:1521/taskDB
+      SPRING_DATASOURCE_USERNAME: system
+      SPRING_DATASOURCE_PASSWORD: oracle123
+
+volumes:
+  oracle_data:
